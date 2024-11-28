@@ -1,30 +1,13 @@
 chrome.action.onClicked.addListener((tab) => {
+  console.log('拡張機能がクリックされました');
+  
   if (tab.url.includes('docs.google.com')) {
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      function: removeEmptyLines
+    chrome.tabs.sendMessage(tab.id, {action: 'removeEmptyLines'}, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error('エラー:', chrome.runtime.lastError);
+      } else {
+        console.log('応答:', response);
+      }
     });
   }
-});
-
-function removeEmptyLines() {
-  console.log('[Google Docs Cleaner] 空白行の削除を開始します');
-  
-  // カーソルを文書の先頭に移動
-  const event = new KeyboardEvent('keydown', {
-    key: 'Home',
-    code: 'Home',
-    ctrlKey: true,
-    bubbles: true
-  });
-  document.dispatchEvent(event);
-  
-  // 文書全体を選択
-  const selectAllEvent = new KeyboardEvent('keydown', {
-    key: 'a',
-    code: 'KeyA',
-    ctrlKey: true,
-    bubbles: true
-  });
-  document.dispatchEvent(selectAllEvent);
-} 
+}); 

@@ -1,37 +1,40 @@
-console.log('[Google Docs Cleaner] Content script が読み込まれました');
+// デバッグ用のログ関数
+function debugLog(message) {
+  console.log(`[Google Docs Cleaner] ${message}`);
+}
+
+// Ctrl+A のシミュレート
+function simulateSelectAll() {
+  const selectAll = new KeyboardEvent('keydown', {
+    bubbles: true,
+    cancelable: true,
+    keyCode: 65,  // 'A'のキーコード
+    ctrlKey: true
+  });
+  document.dispatchEvent(selectAll);
+}
 
 // 空白行を削除する関数
 function removeEmptyLines() {
-  console.log('[Google Docs Cleaner] 空白行の削除を開始します');
+  debugLog('処理を開始します');
   
-  // Google Docsのエディタを取得
-  const editor = document.querySelector('.kix-appview-editor');
-  if (!editor) {
-    console.log('[Google Docs Cleaner] エディタが見つかりません');
-    return;
-  }
-
-  // 現在のカーソル位置を保存
+  // 1. 全選択を試みる
+  simulateSelectAll();
+  debugLog('全選択を実行しました');
+  
+  // 2. 選択されているかチェック
   const selection = window.getSelection();
-  const range = selection.getRangeAt(0);
-
-  try {
-    // カーソルを文書の先頭に移動
-    document.execCommand('selectAll', false, null);
-    
-    // 選択されたテキストを取得
-    const text = selection.toString();
-    
-    // 空白行を削除
-    const lines = text.split('\n');
-    const nonEmptyLines = lines.filter(line => line.trim() !== '');
-    const newText = nonEmptyLines.join('\n');
-    
-    // 新しいテキストを挿入
-    document.execCommand('insertText', false, newText);
-    
-    console.log('[Google Docs Cleaner] 空白行の削除が完了しました');
-  } catch (error) {
-    console.error('[Google Docs Cleaner] エラーが発生しました:', error);
-  }
+  debugLog(`選択されたテキスト: ${selection.toString()}`);
 }
+
+// メッセージリスナーを設定
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'removeEmptyLines') {
+    debugLog('メッセージを受信しました');
+    removeEmptyLines();
+    sendResponse({status: 'completed'});
+  }
+  return true;
+});
+
+debugLog('拡張機能が読み込まれました');
