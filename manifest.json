@@ -5,7 +5,8 @@
   "description": "Google ドキュメントの不要な空白行を削除します",
   "permissions": [
     "activeTab",
-    "clipboardWrite"
+    "clipboardWrite",
+    "clipboardRead"
   ],
   "action": {
     "default_title": "空白行を削除"
