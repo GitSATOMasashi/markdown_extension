@@ -5,18 +5,14 @@
   "description": "Google ドキュメントの不要な空白行を削除します",
   "permissions": [
     "activeTab",
-    "clipboardWrite",
-    "clipboardRead"
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://docs.google.com/*"
   ],
   "action": {
     "default_title": "空白行を削除"
   },
-  "content_scripts": [
-    {
-      "matches": ["*://docs.google.com/*"],
-      "js": ["content.js"]
-    }
-  ],
   "background": {
     "service_worker": "background.js"
   }
