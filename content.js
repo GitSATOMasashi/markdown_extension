@@ -7,17 +7,33 @@ function debugLog(message) {
 function removeEmptyLines() {
   debugLog('空白行の削除を開始');
   
+  // Google Docsの編集可能な領域を取得
   const editor = document.querySelector('.kix-appview-editor');
   if (!editor) {
     debugLog('エディタ領域が見つかりません');
     return;
   }
 
-  const lines = editor.querySelectorAll('.kix-lineview');
-  debugLog(`検出された行数: ${lines.length}`);
-
-  // TODO: 実際の空白行削除ロジックをここに実装
-  // この部分は Google Docs の DOM 構造を詳しく確認してから実装します
+  // 空白行の削除処理
+  try {
+    // 現在の選択範囲を保存
+    document.execCommand('selectAll', false, null);
+    const text = document.getSelection().toString();
+    
+    // 空白行を削除
+    const lines = text.split('\n');
+    const nonEmptyLines = lines.filter(line => line.trim() !== '');
+    const newText = nonEmptyLines.join('\n');
+    
+    // 新しいテキストをクリップボードにコピー
+    navigator.clipboard.writeText(newText).then(() => {
+      // テキストを貼り付け
+      document.execCommand('paste', false, null);
+      debugLog('空白行の削除が完了しました');
+    });
+  } catch (error) {
+    debugLog('エラーが発生しました: ' + error.message);
+  }
 }
 
 // メッセージリスナーを設定
