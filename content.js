@@ -3,31 +3,29 @@ function debugLog(message) {
   console.log(`[Google Docs Cleaner] ${message}`);
 }
 
-// ペーストイベントを監視
-document.addEventListener('paste', function(e) {
-  debugLog('ペーストイベントを検知しました');
+// 空白行を削除する関数
+function removeEmptyLines() {
+  debugLog('空白行の削除を開始');
   
-  // ペースト後に処理を実行（DOMの更新を待つ）
-  setTimeout(() => {
-    analyzeDocument();
-  }, 300);
-});
-
-// ドキュメントの解析
-function analyzeDocument() {
-  debugLog('ドキュメントの解析を開始');
-  
-  // Google Docsの編集可能な領域を取得
   const editor = document.querySelector('.kix-appview-editor');
   if (!editor) {
     debugLog('エディタ領域が見つかりません');
     return;
   }
 
-  // 行要素を取得
   const lines = editor.querySelectorAll('.kix-lineview');
   debugLog(`検出された行数: ${lines.length}`);
+
+  // TODO: 実際の空白行削除ロジックをここに実装
+  // この部分は Google Docs の DOM 構造を詳しく確認してから実装します
 }
 
-// 拡張機能の読み込みを確認
+// メッセージリスナーを設定
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'removeEmptyLines') {
+    removeEmptyLines();
+    sendResponse({status: 'completed'});
+  }
+});
+
 debugLog('拡張機能が読み込まれました');
